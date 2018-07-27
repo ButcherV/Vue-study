@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <link rel="stylesheet" type="text/css" href="reset.css"/>
+</head>
+<body>
+  <div id="xwTab">
+    <ul class="c-tab">
+      <li class="c-tab__nav">
+        <div class="nav-item" v-for="(item, index) of list" @click="selectTab(index)" :class="{ 'is-active': activeTab == index }">{{ item.tabName }}</div>
+      </li>
+      <li class="c-tab__content">
+        <div class="nav-content" v-if="activeTab == index" v-for="(item, index) of list">{{ item.tabContent }}</div>
+      </li>
+    </ul>
+  </div>
+</body>
+<script type="text/javascript">
+  var app = new Vue({
+    el: "#xwTab",
+
+    data: {
+      activeTab: 0,
+      list:[
+        { tabName: "虚拟机" , tabContent: "虚拟机-内容"},
+        { tabName: "存储池" , tabContent: "存储池-内容"},
+        { tabName: "模板" , tabContent: "模板-内容"},
+        { tabName: "镜像" , tabContent: "镜像-内容"},
+      ]
+    },
+
+    methods: {
+      selectTab(id) {
+        this.activeTab = id
+      }
+    }
+  })
+</script>
+
+<style type="text/css">
+  body {
+    --blue: #0096ff;
+  }
+
+
+  .c-tab {
+    margin      : 0 auto;
+    width       : 600px;
+    height      : 500px;
+    padding-top : 50px;
+  }
+
+  .nav-item {
+    display     : inline-block;
+    width       : 150px;
+    height      : 50px;
+    line-height : 50px;
+    border      : 1px solid var(--blue);
+    text-align  : center;
+    cursor      : pointer;
+    transition  : .24s;
+  }
+
+  .nav-item:hover {
+    opacity: .7;
+  }
+
+  .nav-item.is-active {
+    background-color: var(--blue);
+    color: white;
+  }
+
+  .nav-item + .nav-item {
+    border-left-width: 0;
+  }
+
+  .nav-content {
+    height           : 300px;
+    line-height      : 300px;
+    text-align       : center;
+    border           : 1px solid var(--blue);
+    border-top-width : 0;
+  }
+
+
+</style>
+</html>
