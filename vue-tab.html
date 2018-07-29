@@ -2,18 +2,15 @@
 <html>
 <head>
   <title></title>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<!--   <script src="https://cdn.jsdelivr.net/npm/vue@1.0.0/dist/vue.js"></script> -->
   <link rel="stylesheet" type="text/css" href="reset.css"/>
 </head>
 <body>
   <div id="xwTab">
     <ul class="c-tab">
-      <li class="c-tab__nav">
-        <div class="nav-item" v-for="(item, index) of list" @click="selectTab(index)" :class="{ 'is-active': activeTab == index }">{{ item.tabName }}</div>
-      </li>
-      <li class="c-tab__content">
-        <div class="nav-content" v-if="activeTab == index" v-for="(item, index) of list">{{ item.tabContent }}</div>
-      </li>
+      <li class="c-tab__nav" v-for="(item, index) of tab" @click="selectTab(index)">{{ item.name }}</li>
+      <li class="c-tab__content">{{ tab[activeTab].content }}</li>
     </ul>
   </div>
 </body>
@@ -23,17 +20,17 @@
 
     data: {
       activeTab: 0,
-      list:[
-        { tabName: "虚拟机" , tabContent: "虚拟机-内容"},
-        { tabName: "存储池" , tabContent: "存储池-内容"},
-        { tabName: "模板" , tabContent: "模板-内容"},
-        { tabName: "镜像" , tabContent: "镜像-内容"},
+      tab:[
+        { name: "虚拟机" , content: "虚拟机-内容"},
+        { name: "存储池" , content: "存储池-内容"},
+        { name: "模板" , content: "模板-内容"},
+        { name: "镜像" , content: "镜像-内容"}
       ]
     },
 
     methods: {
-      selectTab(id) {
-        this.activeTab = id
+      selectTab(index) {
+        this.activeTab = index
       }
     }
   })
@@ -52,7 +49,7 @@
     padding-top : 50px;
   }
 
-  .nav-item {
+  .c-tab__nav {
     display     : inline-block;
     width       : 150px;
     height      : 50px;
@@ -63,20 +60,20 @@
     transition  : .24s;
   }
 
-  .nav-item:hover {
+  .c-tab__nav:hover {
     opacity: .7;
   }
 
-  .nav-item.is-active {
+  .c-tab__nav.is-active {
     background-color: var(--blue);
     color: white;
   }
 
-  .nav-item + .nav-item {
+  .c-tab__nav + .c-tab__nav {
     border-left-width: 0;
   }
 
-  .nav-content {
+  .c-tab__content {
     height           : 300px;
     line-height      : 300px;
     text-align       : center;
