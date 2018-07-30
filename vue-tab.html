@@ -2,6 +2,7 @@
 <html>
 <head>
   <title></title>
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 <!--   <script src="https://cdn.jsdelivr.net/npm/vue@1.0.0/dist/vue.js"></script> -->
   <link rel="stylesheet" type="text/css" href="reset.css"/>
@@ -9,8 +10,11 @@
 <body>
   <div id="xwTab">
     <ul class="c-tab">
-      <li class="c-tab__nav" v-for="(item, index) of tab" @click="selectTab(index)">{{ item.name }}</li>
-      <li class="c-tab__content">{{ tab[activeTab].content }}</li>
+      <li class="c-tab__nav" v-for="(item, index) of tab" @click="selectTab(index)" :class="{ 'is-active': activeTab == index , 'is-disabled': item.disabled}">{{ item.name }}</li>
+      <li v-for="(item, index) of tab" v-if="activeTab == index">
+        <div class="c-tab__content" v-if="item.disabled">{{ empty }}</div>
+        <div class="c-tab__content" v-else="">{{ tab[activeTab].content }}</div>
+      </li>
     </ul>
   </div>
 </body>
@@ -20,17 +24,20 @@
 
     data: {
       activeTab: 0,
+      empty: "Empty",
       tab:[
-        { name: "虚拟机" , content: "虚拟机-内容"},
+        { name: "虚拟机" , content: "虚拟机-内容", disabled:true},
         { name: "存储池" , content: "存储池-内容"},
-        { name: "模板" , content: "模板-内容"},
+        { name: "模板" , content: "模板-内容", disabled:true},
         { name: "镜像" , content: "镜像-内容"}
       ]
     },
 
     methods: {
       selectTab(index) {
-        this.activeTab = index
+        if (!this.tab[index].disabled) {
+          this.activeTab = index
+        }
       }
     }
   })
@@ -60,13 +67,18 @@
     transition  : .24s;
   }
 
-  .c-tab__nav:hover {
+  .c-tab__nav:not(.is-disabled):hover {
     opacity: .7;
   }
 
-  .c-tab__nav.is-active {
+  .c-tab__nav.is-active:not(.is-disabled) {
     background-color: var(--blue);
     color: white;
+  }
+
+  .c-tab__nav.is-disabled {
+    cursor: not-allowed;
+    color: gray;
   }
 
   .c-tab__nav + .c-tab__nav {
