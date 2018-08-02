@@ -8,6 +8,7 @@
   <div id="xwTab" class="c-tab">
     <xiaowei-tab
       v-bind:tabs=tabs
+      v-bind:active-tab=activeTab
     ></xiaowei-tab>
   </div>
 </body>
@@ -17,6 +18,9 @@
       tabs: {
         type: Array,
         required: true
+      },
+      activeTab: {
+        type: Number
       }
     },
 
@@ -26,16 +30,16 @@
                     v-for="(item,index) of tabs"
                     class="c-tab__nav"
                     @click="selectTab(index)"
-                    :class="getClassNames(index)"
+                    :class="{ 'is-active': index === computedTab, 'is-disabled': tabs[index].disabled }"
                   >{{ item.name }}
                   </li>
                 </ul>
                 <div class="c-tab__content">{{ tabs[activeTab].content }}</div>
               </div>`,
 
-    data: function () {
+    data: function() {
       return {
-        activeTab: 0
+        defaultTab: 0
       }
     },
 
@@ -44,13 +48,13 @@
         if (!this.tabs[index].disabled) {
           this.activeTab = index
         }
-      },
+      }
+    },
 
-      getClassNames(index) {
-        return {
-          'is-disabled' : this.tabs[index].disabled,
-          'is-active'   : this.activeTab == index
-        }
+    computed: {
+      // 开关
+      computedTab() {
+        return this.activeTab === undefined ? this.defaultTab : this.activeTab;
       }
     }
   })
@@ -59,6 +63,7 @@
     el: "#xwTab",
 
     data: {
+      activeTab: 3,
       tabs:[
         { name: "虚拟机" , content: "虚拟机-内容", disabled: true},
         { name: "存储池" , content: "存储池-内容"},
