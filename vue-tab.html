@@ -9,6 +9,7 @@
     <xiaowei-tab
       v-bind:tabs=tabs
       v-bind:active-tab=activeTab
+      @custom-select="onSelect"
     ></xiaowei-tab>
   </div>
 </body>
@@ -34,27 +35,34 @@
                   >{{ item.name }}
                   </li>
                 </ul>
-                <div class="c-tab__content">{{ tabs[activeTab].content }}</div>
+                <div class="c-tab__content">{{ tabs[computedTab].content }}</div>
               </div>`,
 
     data: function() {
       return {
-        defaultTab: 0
+        defaultTab: 0,
+      }
+    },
+
+    computed: {
+      computedTab() {
+        // 开关: 如果外部调用 - 传值 (activeTab)
+        return this.activeTab === undefined ? this.defaultTab : this.activeTab;
       }
     },
 
     methods: {
       selectTab(index) {
-        if (!this.tabs[index].disabled) {
-          this.activeTab = index
+        // 如果外部调用 - 传值 (activeTab)，需要把 index 值传出来（通过 $emit）。
+        if (this.activeTab !== undefined) {
+          this.$emit('custom-select', index);
+        } else { // 如果外部调用 - 没传 activeTab
+          if (this.tabs[index].disabled) {
+            alert("Disabled");
+          } else {
+            this.defaultTab = index;
+          }
         }
-      }
-    },
-
-    computed: {
-      // 开关
-      computedTab() {
-        return this.activeTab === undefined ? this.defaultTab : this.activeTab;
       }
     }
   })
@@ -63,6 +71,7 @@
     el: "#xwTab",
 
     data: {
+      // 如果不写 activeTab，或者 activeTab: "" 会报错。
       activeTab: 3,
       tabs:[
         { name: "虚拟机" , content: "虚拟机-内容", disabled: true},
@@ -70,6 +79,16 @@
         { name: "模板" , content: "模板-内容", disabled: true},
         { name: "镜像" , content: "镜像-内容"}
       ]
+    },
+
+    methods: {
+      onSelect(index) {
+        if (this.tabs[index].disabled) {
+          alert("Disabled");
+        } else {
+          this.activeTab = index;
+        }
+      }
     }
   })
 </script>
