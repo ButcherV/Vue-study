@@ -6,20 +6,73 @@
 </head>
 <body>
   <div id="xwTab" class="c-tab">
-    <ul>
-      <li class="c-tab__nav" v-for="(item, index) of tabs" @click="selectTab(index)" :class="getClassNames(index)">{{ item.name }}</li>
-    </ul>
-    <div class="c-tab__content" v-if="tabs[activeTab].disabled">{{empty}}</div>
-    <div class="c-tab__content" v-else="">{{ tabs[activeTab].content }}</div>
+    <xiaowei-tab
+      v-bind:tabs=tabs
+      v-bind:active-tab=activeTab
+      @custom-select="onSelect"
+    ></xiaowei-tab>
   </div>
 </body>
 <script type="text/javascript">
+  Vue.component('xiaowei-tab', {
+    props: {
+      tabs: {
+        type: Array,
+        required: true
+      },
+      activeTab: {
+        type: Number
+      }
+    },
+
+    template: `<div class="c-tab">
+                <ul>
+                  <li
+                    v-for="(item,index) of tabs"
+                    class="c-tab__nav"
+                    @click="selectTab(index)"
+                    :class="{ 'is-active': index === computedTab, 'is-disabled': tabs[index].disabled }"
+                  >{{ item.name }}
+                  </li>
+                </ul>
+                <div class="c-tab__content">{{ tabs[computedTab].content }}</div>
+              </div>`,
+
+    data: function() {
+      return {
+        defaultTab: 0,
+      }
+    },
+
+    computed: {
+      computedTab() {
+        // 开关: 如果外部调用 - 传值 (activeTab)
+        return this.activeTab === undefined ? this.defaultTab : this.activeTab;
+      }
+    },
+
+    methods: {
+      selectTab(index) {
+        // 如果外部调用 - 传值 (activeTab)，需要把 index 值传出来（通过 $emit）。
+        if (this.activeTab !== undefined) {
+          this.$emit('custom-select', index);
+        } else { // 如果外部调用 - 没传 activeTab
+          if (this.tabs[index].disabled) {
+            alert("Disabled");
+          } else {
+            this.defaultTab = index;
+          }
+        }
+      }
+    }
+  })
+
   var app = new Vue({
     el: "#xwTab",
 
     data: {
-      activeTab: 0,
-      empty: "Empty",
+      // 如果不写 activeTab，或者 activeTab: "" 会报错。
+      activeTab: 3,
       tabs:[
         { name: "虚拟机" , content: "虚拟机-内容", disabled: true},
         { name: "存储池" , content: "存储池-内容"},
@@ -29,16 +82,11 @@
     },
 
     methods: {
-      selectTab(index) {
-        if (!this.tabs[index].disabled) {
-          this.activeTab = index
-        }
-      },
-
-      getClassNames(index) {
-        return {
-          'is-disabled' : this.tabs[index].disabled,
-          'is-active'   : this.activeTab == index
+      onSelect(index) {
+        if (this.tabs[index].disabled) {
+          alert("Disabled");
+        } else {
+          this.activeTab = index;
         }
       }
     }
@@ -46,12 +94,15 @@
 </script>
 
 <style type="text/css">
+  *, *:before, *:after {
+    box-sizing : border-box;
+  }
+
   ol, ul, li {
     list-style : none;
     margin     : 0;
     padding    : 0;
     border     : 0;
-    box-sizing : border-box;
   }
 
   body {
@@ -59,10 +110,13 @@
   }
 
   #xwTab {
+    padding-top : 50px;
+  }
+
+  .c-tab {
     margin      : 0 auto;
     width       : 600px;
-    height      : 500px;
-    padding-top : 50px;
+    height      : 100%;
   }
 
   .c-tab__nav {
@@ -101,7 +155,6 @@
     border           : 1px solid var(--blue);
     border-top-width : 0;
   }
-
 
 </style>
 </html>
